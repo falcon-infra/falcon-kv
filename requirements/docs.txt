@@ -1,2 +1,2 @@
 # P4 offline documentation source build.
-sphinx==7.2.6
+sphinx==9.0.4
