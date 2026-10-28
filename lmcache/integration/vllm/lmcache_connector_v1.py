@@ -396,11 +396,19 @@ class LMCacheConnectorV1Dynamic(KVConnectorBase_V1, SupportsHMA):
         )
 
     def prepare_sparse_graph_step(
-        self, target_layer_names: tuple[str, ...], *, allow_empty: bool = False
-    ) -> PreparedSparseSource | None:
+        self,
+        target_layer_names: tuple[str, ...],
+        *,
+        allow_empty: bool = False,
+        request_ids: tuple[str, ...] | None = None,
+        frontiers: tuple[int, ...] | None = None,
+    ) -> PreparedSparseSource | None | tuple[PreparedSparseSource | None, ...]:
         """Prepare and lease graph sources, leaving MTP draft loads independent."""
         return self._lmcache_engine.prepare_sparse_graph_step(
-            target_layer_names, allow_empty=allow_empty
+            target_layer_names,
+            allow_empty=allow_empty,
+            request_ids=request_ids,
+            frontiers=frontiers,
         )
 
     def capture_live_source_event_handoff(self, forward_context: Any) -> bool:
