@@ -14,6 +14,7 @@ from vllm.distributed.kv_transfer.kv_connector.v1.base import (
 from vllm.logger import init_logger
 from vllm.v1.core.sched.output import SchedulerOutput
 import torch
+from lmcache.v1.device_connector.sparse import PreparedSparseSource
 
 if TYPE_CHECKING:
     # Third Party
@@ -392,6 +393,14 @@ class LMCacheConnectorV1Dynamic(KVConnectorBase_V1, SupportsHMA):
             transfer.kv_connector_extra_config = extra
         self._common_init(
             vllm_config=vllm_config, role=role, kv_cache_config=kv_cache_config
+        )
+
+    def prepare_sparse_graph_step(
+        self, target_layer_names: tuple[str, ...], *, allow_empty: bool = False
+    ) -> PreparedSparseSource | None:
+        """Prepare and lease graph sources, leaving MTP draft loads independent."""
+        return self._lmcache_engine.prepare_sparse_graph_step(
+            target_layer_names, allow_empty=allow_empty
         )
 
     def capture_live_source_event_handoff(self, forward_context: Any) -> bool:
